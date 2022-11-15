@@ -1,0 +1,35 @@
+{
+    "type": "library",
+    "name": "locomotivemtl/wp-lib-theme",
+    "description": "Locomotive's WordPress Theme Library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Locomotive",
+            "homepage": "https://locomotive.ca"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "anthonybudd/wp_ajax": "^1.0",
+        "mcaskill/php-html-build-attributes": "^1.0",
+        "timber/timber": "2.x-dev"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "preferred-install": "dist",
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "WpLib\\": "inc/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    }
+}
