@@ -16,11 +16,12 @@
         "anthonybudd/wp_ajax": "^1.0",
         "composer/installers": "^1.0 || ^2.0",
         "mcaskill/php-html-build-attributes": "^1.0",
-        "timber/timber": "2.x-dev"
+        "timber/timber": "2.x-dev",
+        "twig/html-extra": "^3.4"
     },
     "autoload": {
         "psr-4": {
-            "WpLib\\": "inc/"
+            "App\\Theme\\": "inc/"
         }
     },
     "config": {
