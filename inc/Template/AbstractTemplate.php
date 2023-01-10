@@ -93,7 +93,7 @@ abstract class AbstractTemplate
      * @param string $transformer
      * @return ?array
      */
-    public function transform(array $data = [], string $transformer): ?array
+    public function transform(array $data, string $transformer): ?array
     {
         $transformer = (new $transformer);
         return $transformer($data);
