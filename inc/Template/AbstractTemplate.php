@@ -9,8 +9,8 @@ use Timber\Timber;
 
 abstract class AbstractTemplate
 {
-    /** @var ?array<string, mixed> */
-    private ?array $context;
+    /** @var array<string, mixed> */
+    private array $context;
 
     /** @var ?array<string, mixed> */
     private ?array $fields;
@@ -18,9 +18,14 @@ abstract class AbstractTemplate
     /** @var CoreEntity */
     private ?CoreEntity $queried_entity;
 
-    public function __construct()
+    /**
+     * @param array<string, mixed> $data Context data.
+     */
+    public function __construct(array $data = [])
     {
         $context = Timber::context();
+
+        $this->context = array_replace($context, $data);
 
         /** @see {@see \Timber\Timber::context()} List of resolved queried objects. */
         $this->queried_entity = (
@@ -29,8 +34,6 @@ abstract class AbstractTemplate
             $context['post'] ??
             null
         );
-
-        $this->set_context($context);
     }
 
     /**
