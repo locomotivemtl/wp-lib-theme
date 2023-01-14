@@ -5,6 +5,7 @@ namespace App\Theme\Template;
 use App\Theme\Transformer\TransformerInterface as Transformer;
 use InvalidArgumentException;
 use Timber\CoreEntityInterface as CoreEntity;
+use Timber\Loader;
 use Timber\Timber;
 
 abstract class AbstractTemplate
@@ -86,6 +87,27 @@ abstract class AbstractTemplate
     public function get_queried_entity() : ?CoreEntity
     {
         return ($this->queried_entity ?? null);
+    }
+
+    /**
+     * Renders a Twig file.
+     *
+     * @param string[]|string $filenames Name or full path of the Twig file
+     *     to render. If this is an array of file names or paths, Timber will
+     *     render the first file that exists.
+     * @param bool|int|array  $expires   Optional. In seconds. Use false to
+     *     disable cache altogether. When passed an array, the first value is
+     *     used for non-logged in visitors, the second for users. Default false.
+     * @param string       $cache_mode Optional. Any of the cache mode constants
+     *     defined in Timber\Loader.
+     * @return bool|string The echoed output.
+     */
+    public function render(
+        $filenames,
+        $expires = false,
+        $cache_mode = Loader::CACHE_USE_DEFAULT
+    ) : void {
+        Timber::render( $filenames, $this->get_context(), $expires, $cache_mode );
     }
 
     /**
