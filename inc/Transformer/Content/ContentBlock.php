@@ -10,14 +10,15 @@ use App\Theme\Transformer\AbstractTransformer;
 class ContentBlock extends AbstractTransformer
 {
     /**
-     * @param  array $data Raw ACF content block data.
-     * @return array
+     * @param  array<string, mixed> $data Raw ACF content block data.
+     * @return ?array<string, mixed>
      */
-    public function __invoke(array $data): array
+    public function transform(array $data) : ?array
     {
-        $layout = !empty($data['acf_fc_layout']) ?
-            str_replace('_', '-', $data['acf_fc_layout']) :
-            null;
+        $layout = !empty($data['acf_fc_layout'])
+            ? str_replace('_', '-', $data['acf_fc_layout'])
+            : null;
+
         return [
             'layout'   => $layout,
             'template' => $this->getTemplatePath($layout),
@@ -26,12 +27,12 @@ class ContentBlock extends AbstractTransformer
     }
 
     /**
-     * @param string|null $layout
+     * @param  ?string $layout
      * @return string
      */
-    protected function getTemplatePath(?string $layout = null): string
+    protected function getTemplatePath(?string $layout = null) : string
     {
-        $path = get_template_directory() . '/views/blocks/block';
+        $path = get_stylesheet_directory() . '/views/blocks/block';
 
         if (!empty($layout)) {
             $path .= '-' . $layout;

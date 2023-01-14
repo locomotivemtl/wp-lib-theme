@@ -2,18 +2,15 @@
 
 namespace App\Theme\Transformer;
 
-/**
- * Abstract transformer
- */
 abstract class AbstractTransformer
 {
     /**
      * Alias of {@see self::__invoke()}.
      *
-     * @param  array $data
-     * @return array|null
+     * @param  array<string, mixed> $data
+     * @return ?array<string, mixed>
      */
-    public function transform(array $data)
+    public function transform(array $data) : ?array
     {
         return $this($data);
     }

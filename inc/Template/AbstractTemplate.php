@@ -2,25 +2,20 @@
 
 namespace App\Theme\Template;
 
+use Timber\Post;
 use Timber\Timber;
 
-/**
- * Abstract Template
- */
 abstract class AbstractTemplate
 {
-    /** @var array */
-    private $context;
+    /** @var ?array<string, mixed> */
+    private ?array $context;
 
-    /** @var array */
-    private $fields;
+    /** @var ?array<string, mixed> */
+    private ?array $fields;
 
     /** @var Timber\Post */
-    private $post;
+    private ?Post $post;
 
-    /**
-     * @return void
-     */
     public function __construct()
     {
         $context    = Timber::context();
@@ -33,10 +28,10 @@ abstract class AbstractTemplate
     /**
      * Set Context Data
      *
-     * @param array $data Context data.
-     * @return $this
+     * @param  array<string, mixed> $data Context data.
+     * @return self
      */
-    public function set_context(array $data = [])
+    public function set_context(array $data = []) : self
     {
         $context = $this->get_context();
         $this->context = array_merge($context, $data);
@@ -46,9 +41,9 @@ abstract class AbstractTemplate
     /**
      * Get Context Data
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function get_context()
+    public function get_context() : array
     {
         if (!isset($this->context)) {
             $this->context = [];
@@ -59,9 +54,9 @@ abstract class AbstractTemplate
     /**
      * Get ACF Fields
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function get_fields()
+    public function get_fields() : array
     {
         if (!isset($this->fields)) {
             $this->fields = [];
@@ -76,12 +71,12 @@ abstract class AbstractTemplate
     /**
      * Get Post
      *
-     * @return Timber\Post|boolean
+     * @return ?Post
      */
-    public function get_post()
+    public function get_post() : ?Post
     {
         if (!isset($this->post)) {
-            return false;
+            return null;
         }
         return $this->post;
     }
@@ -89,9 +84,9 @@ abstract class AbstractTemplate
     /**
      * Transform data.
      *
-     * @param array $data
-     * @param string $transformer
-     * @return ?array
+     * @param  array<string, mixed> $data
+     * @param  string               $transformer
+     * @return ?array<string, mixed>
      */
     public function transform(array $data, string $transformer): ?array
     {

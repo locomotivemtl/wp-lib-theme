@@ -14,14 +14,14 @@ abstract class AbstractAction extends WP_AJAX
      *
      * @var bool
      */
-    protected $success = true;
+    protected bool $success = true;
 
     /**
      * A list of errors encountered during action execution.
      *
-     * @var array
+     * @var array<string, mixed>[]
      */
-    protected $errors = [];
+    protected array $errors = [];
 
     /**
      * The results of the action, in any format.
@@ -35,7 +35,7 @@ abstract class AbstractAction extends WP_AJAX
      *
      * @var int
      */
-    protected $responseStatus = 200;
+    protected int $responseStatus = 200;
 
     /**
      * Retrieves the URL to the AJAX controller for the current action.
@@ -45,7 +45,7 @@ abstract class AbstractAction extends WP_AJAX
      * @param  array  $args Optional associative array of query variables.
      * @return string AJAX URL link with optional query parameters appended.
      */
-    public static function url( $args = [] )
+    public static function url( array $args = [] ) : string
     {
         $args = wp_parse_args( $args, [
             'action' => (new static())->action,
@@ -65,7 +65,7 @@ abstract class AbstractAction extends WP_AJAX
      * @param  int   $status   Optional. The HTTP status code to output.
      * @return void
      */
-    public function JSONResponse( $response, $status = null ) : void
+    public function JSONResponse( $response, int $status = null ) : void
     {
         if ( $status === null ) {
             $status = $this->responseStatus;
@@ -119,7 +119,7 @@ abstract class AbstractAction extends WP_AJAX
     /**
      * Set the list of errors.
      *
-     * @param array $errors
+     * @param array<string, mixed>[] $errors
      */
     public function setErrors( array $errors ) : self
     {
@@ -131,7 +131,7 @@ abstract class AbstractAction extends WP_AJAX
     /**
      * Retrieve the list of errors.
      *
-     * @return array
+     * @return array<string, mixed>[]
      */
     protected function errors() : array
     {
