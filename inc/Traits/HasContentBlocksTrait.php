@@ -2,6 +2,8 @@
 
 namespace App\Theme\Traits;
 
+use App\Theme\Transformer\TransformerInterface as Transformer;
+
 trait HasContentBlocksTrait
 {
     /**
@@ -66,9 +68,9 @@ trait HasContentBlocksTrait
     /**
      * Transform data.
      *
-     * @param  array<string, mixed> $data
-     * @param  string               $transformer
+     * @param  array<string, mixed>                  $data
+     * @param  Transformer|class-string<Transformer> $transformer
      * @return ?array<string, mixed>
      */
-    abstract public function transform(array $data, string $transformer): ?array;
+    abstract public function transform(array $data, $transformer) : ?array;
 }

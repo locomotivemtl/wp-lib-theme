@@ -2,6 +2,8 @@
 
 namespace App\Theme\Template;
 
+use App\Theme\Transformer\TransformerInterface as Transformer;
+use InvalidArgumentException;
 use Timber\Post;
 use Timber\Timber;
 
@@ -84,13 +86,24 @@ abstract class AbstractTemplate
     /**
      * Transform data.
      *
-     * @param  array<string, mixed> $data
-     * @param  string               $transformer
+     * @param  array<string, mixed>                  $data
+     * @param  Transformer|class-string<Transformer> $transformer
+     * @throws InvalidArgumentException If the $transformer is invalid.
      * @return ?array<string, mixed>
      */
-    public function transform(array $data, string $transformer): ?array
+    public function transform(array $data, $transformer) : ?array
     {
-        $transformer = (new $transformer);
-        return $transformer($data);
+        if (is_string($transformer) && class_exists($transformer)) {
+            $transformer = new $transformer;
+        }
+
+        if ($transformer instanceof Transformer) {
+            return $transformer->transform($data);
+        }
+
+        throw new InvalidArgumentException(sprintf(
+            'Expected $transformer parameter to be a class string or instance of %s',
+            Transformer::class
+        ));
     }
 }
