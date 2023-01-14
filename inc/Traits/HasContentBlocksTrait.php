@@ -17,14 +17,20 @@ trait HasContentBlocksTrait
     public function get_content_blocks() : array
     {
         if (!isset($this->content_blocks)) {
-            $blocks = $this->get_fields()['content_blocks'] ?? [];
-            if (!empty($blocks) && have_rows('content_blocks')) {
-                foreach ($blocks as $block_data) {
-                    the_row();
+            $this->content_blocks = [];
 
-                    $block = $this->transform_block($block_data);
-                    if (!empty($block)) {
-                        $this->content_blocks[] = $block;
+            $entity = $this->get_queried_entity();
+            if ($entity) {
+                $key    = 'content_blocks';
+                $blocks = $this->get_fields()[$key] ?? [];
+                if ($blocks && have_rows($key, $entity->wp_object())) {
+                    foreach ($blocks as $block_data) {
+                        the_row();
+
+                        $block = $this->transform_block($block_data);
+                        if ($block) {
+                            $this->content_blocks[] = $block;
+                        }
                     }
                 }
             }

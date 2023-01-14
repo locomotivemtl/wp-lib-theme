@@ -4,7 +4,7 @@ namespace App\Theme\Template;
 
 use App\Theme\Transformer\TransformerInterface as Transformer;
 use InvalidArgumentException;
-use Timber\Post;
+use Timber\CoreEntityInterface as CoreEntity;
 use Timber\Timber;
 
 abstract class AbstractTemplate
@@ -15,15 +15,21 @@ abstract class AbstractTemplate
     /** @var ?array<string, mixed> */
     private ?array $fields;
 
-    /** @var Timber\Post */
-    private ?Post $post;
+    /** @var CoreEntity */
+    private ?CoreEntity $queried_entity;
 
     public function __construct()
     {
-        $context    = Timber::context();
-        $this->post = Timber::get_post();
+        $context = Timber::context();
 
-        $context['post'] = $this->post;
+        /** @see {@see \Timber\Timber::context()} List of resolved queried objects. */
+        $this->queried_entity = (
+            $context['author'] ??
+            $context['term'] ??
+            $context['post'] ??
+            null
+        );
+
         $this->set_context($context);
     }
 
@@ -36,7 +42,9 @@ abstract class AbstractTemplate
     public function set_context(array $data = []) : self
     {
         $context = $this->get_context();
-        $this->context = array_merge($context, $data);
+
+        $this->context = array_replace($context, $data);
+
         return $this;
     }
 
@@ -47,10 +55,7 @@ abstract class AbstractTemplate
      */
     public function get_context() : array
     {
-        if (!isset($this->context)) {
-            $this->context = [];
-        }
-        return $this->context;
+        return $this->context ??= [];
     }
 
     /**
@@ -63,24 +68,21 @@ abstract class AbstractTemplate
         if (!isset($this->fields)) {
             $this->fields = [];
 
-            if (!empty($this->post->ID)) {
-                $this->fields = get_fields($this->post->ID);
+            $entity = $this->get_queried_entity();
+            if ($entity) {
+                $this->fields = get_fields($entity->wp_object()) ?: [];
             }
         }
+
         return $this->fields;
     }
 
     /**
-     * Get Post
-     *
-     * @return ?Post
+     * @return ?CoreEntity
      */
-    public function get_post() : ?Post
+    public function get_queried_entity() : ?CoreEntity
     {
-        if (!isset($this->post)) {
-            return null;
-        }
-        return $this->post;
+        return ($this->queried_entity ?? null);
     }
 
     /**
