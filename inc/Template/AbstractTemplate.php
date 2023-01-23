@@ -10,75 +10,86 @@ use Timber\Timber;
 
 abstract class AbstractTemplate
 {
-    /** @var array<string, mixed> */
+    /**
+     * The template's context data.
+     *
+     * @var array<string, mixed>
+     */
     private array $context;
 
-    /** @var ?array<string, mixed> */
-    private ?array $fields;
+    /**
+     * The queried entity's ACF fields.
+     *
+     * @var ?array<string, mixed>
+     */
+    private ?array $fields = null;
 
-    /** @var CoreEntity */
+    /**
+     * The Timber entity.
+     *
+     * @var CoreEntity
+     */
     private ?CoreEntity $queried_entity;
 
     /**
-     * @param array<string, mixed> $data Context data.
+     * @param array<string, mixed> $data Any initial data to merge with
+     *     the default template and context data.
      */
     public function __construct(array $data = [])
     {
-        $context = Timber::context();
+        $this->context = Timber::context();
+        $this->queried_entity = $this->resolve_queried_entity($this->context);
 
-        $this->context = array_replace($context, $data);
-
-        /** @see {@see \Timber\Timber::context()} List of resolved queried objects. */
-        $this->queried_entity = (
-            $context['author'] ??
-            $context['term'] ??
-            $context['post'] ??
-            null
-        );
+        if ($data) {
+            $this->set_context($data);
+        }
     }
 
     /**
-     * Set Context Data
+     * Merges the provided context data.
      *
-     * @param  array<string, mixed> $data Context data.
+     * @param  array<string, mixed> $data Any data to merge with
+     *     the current context data.
      * @return self
      */
-    public function set_context(array $data = []) : self
+    public function set_context(array $data) : self
     {
-        $context = $this->get_context();
+        if (!$data) {
+            throw new InvalidArgumentException(
+                'Expected $data parameter to be palpable'
+            );
+        }
 
-        $this->context = array_replace($context, $data);
+        $this->context = $this->get_context($data);
+        $this->update_queried_entity($this->context);
 
         return $this;
     }
 
     /**
-     * Get Context Data
+     * Returns the context data.
      *
+     * @param  array<string, mixed> $extra Any extra data to merge with
+     *     the returned context data.
      * @return array<string, mixed>
      */
-    public function get_context() : array
+    public function get_context(array $extra = []) : array
     {
-        return $this->context ??= [];
+        if ($extra) {
+            return array_replace($this->context, $extra);
+        }
+
+        return $this->context;
     }
 
     /**
-     * Get ACF Fields
+     * Returns the queried entity's ACF fields.
      *
      * @return array<string, mixed>
      */
     public function get_fields() : array
     {
-        if (!isset($this->fields)) {
-            $this->fields = [];
-
-            $entity = $this->get_queried_entity();
-            if ($entity) {
-                $this->fields = get_fields($entity->wp_object()) ?: [];
-            }
-        }
-
-        return $this->fields;
+        return $this->fields ??= $this->load_fields();
     }
 
     /**
@@ -86,7 +97,7 @@ abstract class AbstractTemplate
      */
     public function get_queried_entity() : ?CoreEntity
     {
-        return ($this->queried_entity ?? null);
+        return $this->queried_entity;
     }
 
     /**
@@ -132,5 +143,56 @@ abstract class AbstractTemplate
             'Expected $transformer parameter to be a class string or instance of %s',
             Transformer::class
         ));
+    }
+
+    /**
+     * Loads the queried entity's ACF fields.
+     *
+     * @return array<string, mixed>
+     */
+    protected function load_fields() : array
+    {
+        $entity = $this->get_queried_entity();
+
+        return $entity
+            ? (get_fields($entity->wp_object()) ?: [])
+            : [];
+    }
+
+    /**
+     * Returns the queried entity from the the provided dataset, if any.
+     *
+     * @param  array<string, mixed> $data
+     * @return ?CoreEntity
+     */
+    protected function resolve_queried_entity(array $data) : ?CoreEntity
+    {
+        /** @see {@see \Timber\Timber::context()} List of resolved queried objects. */
+        return (
+            $data['author'] ??
+            $data['term'] ??
+            $data['post'] ??
+            null
+        );
+    }
+
+    /**
+     * Updates the queried entity and related class properties
+     * from the provided dataset.
+     *
+     * @param  array<string, mixed> $data
+     * @return self
+     */
+    protected function update_queried_entity(array $data) : self
+    {
+        $queried_entity = $this->resolve_queried_entity($data);
+
+        if ($queried_entity !== $this->queried_entity) {
+            $this->queried_entity = $queried_entity;
+            // If there is no queried object, flush the ACF fields.
+            $this->fields = null;
+        }
+
+        return $this;
     }
 }

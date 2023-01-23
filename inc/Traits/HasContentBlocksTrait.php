@@ -7,36 +7,18 @@ use App\Theme\Transformer\TransformerInterface as Transformer;
 trait HasContentBlocksTrait
 {
     /**
+     * The queried entity's processed content blocks from ACF fields.
+     *
      * @var ?array<string, mixed>[]
      */
-    protected ?array $content_blocks;
+    protected ?array $content_blocks = null;
 
     /**
      * @return array<string, mixed>[]
      */
     public function get_content_blocks() : array
     {
-        if (!isset($this->content_blocks)) {
-            $this->content_blocks = [];
-
-            $entity = $this->get_queried_entity();
-            if ($entity) {
-                $key    = 'content_blocks';
-                $blocks = $this->get_fields()[$key] ?? [];
-                if ($blocks && have_rows($key, $entity->wp_object())) {
-                    foreach ($blocks as $block_data) {
-                        the_row();
-
-                        $block = $this->transform_block($block_data);
-                        if ($block) {
-                            $this->content_blocks[] = $block;
-                        }
-                    }
-                }
-            }
-        }
-
-        return $this->content_blocks;
+        return $this->content_blocks ??= $this->load_content_blocks();
     }
 
     /**
@@ -79,4 +61,35 @@ trait HasContentBlocksTrait
      * @return ?array<string, mixed>
      */
     abstract public function transform(array $data, $transformer) : ?array;
+
+    /**
+     * @return array<string, mixed>[]
+     */
+    public function load_content_blocks() : array
+    {
+        $entity = $this->get_queried_entity();
+        if (!$entity) {
+            return [];
+        }
+
+        $key    = 'content_blocks';
+        $blocks = $this->get_fields()[$key] ?? [];
+
+        if (!$blocks || !have_rows($key, $entity->wp_object())) {
+            return [];
+        }
+
+        $content_blocks = [];
+
+        foreach ($blocks as $block_data) {
+            the_row();
+
+            $block = $this->transform_block($block_data);
+            if ($block) {
+                $content_blocks[] = $block;
+            }
+        }
+
+        return $content_blocks;
+    }
 }
