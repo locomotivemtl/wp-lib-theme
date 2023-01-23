@@ -41,9 +41,9 @@ trait HasContentBlocksTrait
 
     /**
      * @param  array<string, mixed> $block
-     * @return array<string, mixed>
+     * @return ?array<string, mixed>
      */
-    public function transform_block(array $block = []) : array
+    public function transform_block(array $block = []) : ?array
     {
         $transformer = $this->resolve_block_transformer($block);
         return $this->transform($block, $transformer);
