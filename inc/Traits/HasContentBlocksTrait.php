@@ -3,15 +3,35 @@
 namespace App\Theme\Traits;
 
 use App\Theme\Transformer\TransformerInterface as Transformer;
+use Timber\CoreEntityInterface as CoreEntity;
 
 trait HasContentBlocksTrait
 {
+    /**
+     * ACF field selector for the content blocks.
+     */
+    protected string $content_blocks_selector = 'content_blocks';
+
     /**
      * The queried entity's processed content blocks from ACF fields.
      *
      * @var ?array<string, mixed>[]
      */
     protected ?array $content_blocks = null;
+
+    /**
+     * @return ?CoreEntity
+     */
+    abstract public function get_queried_entity() : ?CoreEntity;
+
+    /**
+     * Transform data.
+     *
+     * @param  array<string, mixed>                  $data
+     * @param  Transformer|class-string<Transformer> $transformer
+     * @return ?array<string, mixed>
+     */
+    abstract public function transform(array $data, $transformer) : ?array;
 
     /**
      * @return array<string, mixed>[]
@@ -54,42 +74,33 @@ trait HasContentBlocksTrait
     }
 
     /**
-     * Transform data.
-     *
-     * @param  array<string, mixed>                  $data
-     * @param  Transformer|class-string<Transformer> $transformer
-     * @return ?array<string, mixed>
-     */
-    abstract public function transform(array $data, $transformer) : ?array;
-
-    /**
      * @return array<string, mixed>[]
      */
-    public function load_content_blocks() : array
+    protected function load_content_blocks() : array
     {
         $entity = $this->get_queried_entity();
         if (!$entity) {
             return [];
         }
 
-        $key    = 'content_blocks';
-        $blocks = $this->get_fields()[$key] ?? [];
+        $selector = $this->content_blocks_selector;
+        $context  = $entity->wp_object();
 
-        if (!$blocks || !have_rows($key, $entity->wp_object())) {
+        if (!have_rows($selector, $context)) {
             return [];
         }
 
-        $content_blocks = [];
+        $blocks = [];
 
-        foreach ($blocks as $block_data) {
-            the_row();
+        while (have_rows($selector, $context)) {
+            $row = the_row(true);
 
-            $block = $this->transform_block($block_data);
+            $block = $this->transform_block($row);
             if ($block) {
-                $content_blocks[] = $block;
+                $blocks[] = $block;
             }
         }
 
-        return $content_blocks;
+        return $blocks;
     }
 }
