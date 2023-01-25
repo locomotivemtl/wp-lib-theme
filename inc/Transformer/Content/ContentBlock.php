@@ -10,34 +10,46 @@ use App\Theme\Transformer\AbstractTransformer;
 class ContentBlock extends AbstractTransformer
 {
     /**
-     * @param  array<string, mixed> $data Raw ACF content block data.
+     * @param  array<string, mixed> $data The ACF content block data.
      * @return ?array<string, mixed>
      */
     public function transform(array $data) : ?array
     {
-        $layout = !empty($data['acf_fc_layout'])
-            ? str_replace('_', '-', $data['acf_fc_layout'])
-            : null;
-
-        return [
-            'layout'   => $layout,
-            'template' => $this->getTemplatePath($layout),
-            'data'     => $data,
-        ];
+        return $this->wrap($data);
     }
 
     /**
-     * @param  ?string $layout
+     * @param  ?string $layout The ACF layout name.
      * @return string
      */
-    protected function getTemplatePath(?string $layout = null) : string
+    protected function get_template_path(?string $layout = null) : string
     {
         $path = get_stylesheet_directory() . '/views/blocks/block';
 
-        if (!empty($layout)) {
+        if ($layout) {
             $path .= '-' . $layout;
         }
 
         return $path . '.twig';
+    }
+
+    /**
+     * @param  array<string, mixed> $data   The ACF content block data.
+     * @param  ?string              $layout The ACF layout name.
+     * @return array<string, mixed>
+     */
+    public function wrap(array $data, ?string $layout = null) : array
+    {
+        $layout ??= ($data['acf_fc_layout'] ?? null);
+
+        if ($layout) {
+            $layout = str_replace('_', '-', $layout);
+        }
+
+        return [
+            'layout'   => $layout,
+            'template' => $this->get_template_path($layout),
+            'data'     => $data,
+        ];
     }
 }
