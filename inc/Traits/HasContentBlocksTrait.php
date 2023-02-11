@@ -10,7 +10,17 @@ trait HasContentBlocksTrait
     /**
      * ACF field selector for the content blocks.
      */
-    protected string $content_blocks_selector = 'content_blocks';
+    protected string $content_blocks_acf_selector = 'content_blocks';
+
+    /**
+     * PHP namespace for content blocks.
+     */
+    protected string $content_blocks_namespace = 'App\\Theme\\Transformer\\Content';
+
+    /**
+     * PHP fallback class name for content blocks.
+     */
+    protected string $content_blocks_class = 'ContentBlock';
 
     /**
      * The queried entity's processed content blocks from ACF fields.
@@ -59,18 +69,16 @@ trait HasContentBlocksTrait
     {
         $layout = $block['acf_fc_layout'] ?? null;
 
-        $namespace = 'App\\Theme\\Transformer\\Content\\';
-
         if (!empty($layout)) {
             $layout = str_replace('_', '', ucwords($layout, '_'));
-            $class = $namespace . $layout;
+            $class = $this->content_blocks_namespace . '\\' . $layout;
 
             if (class_exists($class)) {
                 return $class;
             }
         }
 
-        return $namespace . 'ContentBlock';
+        return $this->content_blocks_namespace . '\\' . $this->content_blocks_class;
     }
 
     /**
@@ -83,7 +91,7 @@ trait HasContentBlocksTrait
             return [];
         }
 
-        $selector = $this->content_blocks_selector;
+        $selector = $this->content_blocks_acf_selector;
         $context  = $entity->wp_object();
 
         if (!have_rows($selector, $context)) {
