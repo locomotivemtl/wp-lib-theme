@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Theme\Action;
+namespace Locomotive\Theme\Action;
 
 use WP_AJAX;
 

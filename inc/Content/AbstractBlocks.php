@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Theme\Content;
+namespace Locomotive\Theme\Content;
 
-use App\Theme\Content\BuildingBlocks;
+use Locomotive\Theme\Content\BuildingBlocks;
 use Closure;
 use Generator;
 use InvalidArgumentException;
@@ -19,8 +19,8 @@ use Traversable;
  * }
  * ```
  *
- * @event filter:app/theme/content/blocks/pre_parse_block
- * @event filter:app/theme/content/blocks/pre_parse_block/layout={$layout} {
+ * @event filter:locomotive/theme/content/blocks/pre_parse_block
+ * @event filter:locomotive/theme/content/blocks/pre_parse_block/layout={$layout} {
  *     Filters whether to preempt generating the content block from a flexible content layout.
  *
  *     Passing FALSE to the filter will effectively short-circuit the
@@ -40,8 +40,8 @@ use Traversable;
  *     @param  BuildingBlocks $builder The content builder.
  * }
  *
- * @event filter:app/theme/content/blocks/parse_block
- * @event filter:app/theme/content/blocks/parse_block/layout={$layout} {
+ * @event filter:locomotive/theme/content/blocks/parse_block
+ * @event filter:locomotive/theme/content/blocks/parse_block/layout={$layout} {
  *     Filters the content block from a flexible content layout.
  *
  *     @param  object|null    $block   The content block composed from the $row.
@@ -136,11 +136,11 @@ abstract class AbstractBlocks implements BuildingBlocks
     /**
      * Parse the content block.
      *
-     * @fires filter:app/theme/content/blocks/pre_parse_block
-     * @fires filter:app/theme/content/blocks/pre_parse_block/layout={$layout}
+     * @fires filter:locomotive/theme/content/blocks/pre_parse_block
+     * @fires filter:locomotive/theme/content/blocks/pre_parse_block/layout={$layout}
      *
-     * @fires filter:app/theme/content/blocks/parse_block
-     * @fires filter:app/theme/content/blocks/parse_block/layout={$layout}
+     * @fires filter:locomotive/theme/content/blocks/parse_block
+     * @fires filter:locomotive/theme/content/blocks/parse_block/layout={$layout}
      *
      * @param  array       $row    The layout row to process.
      * @param  string|null $layout The block layout to render.
@@ -159,8 +159,8 @@ abstract class AbstractBlocks implements BuildingBlocks
         }
 
         $block = null;
-        $block = apply_filters_ref_array( 'app/theme/content/blocks/pre_parse_block',                  [ $block, $row, $layout, $this ] );
-        $block = apply_filters_ref_array( "app/theme/content/blocks/pre_parse_block/layout={$layout}", [ $block, $row, $layout, $this ] );
+        $block = apply_filters_ref_array( 'locomotive/theme/content/blocks/pre_parse_block',                  [ $block, $row, $layout, $this ] );
+        $block = apply_filters_ref_array( "locomotive/theme/content/blocks/pre_parse_block/layout={$layout}", [ $block, $row, $layout, $this ] );
 
         if ( false === $block ) {
             return null;
@@ -176,8 +176,8 @@ abstract class AbstractBlocks implements BuildingBlocks
             $block = $this->{$method}( $row );
         }
 
-        $block = apply_filters_ref_array( 'app/theme/content/blocks/parse_block',                  [ $block, $row, $layout, $this ] );
-        $block = apply_filters_ref_array( "app/theme/content/blocks/parse_block/layout={$layout}", [ $block, $row, $layout, $this ] );
+        $block = apply_filters_ref_array( 'locomotive/theme/content/blocks/parse_block',                  [ $block, $row, $layout, $this ] );
+        $block = apply_filters_ref_array( "locomotive/theme/content/blocks/parse_block/layout={$layout}", [ $block, $row, $layout, $this ] );
 
         if ( false === $block ) {
             return null;

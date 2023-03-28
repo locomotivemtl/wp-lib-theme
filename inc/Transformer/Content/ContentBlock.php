@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Theme\Transformer\Content;
+namespace Locomotive\Theme\Transformer\Content;
 
-use App\Theme\Transformer\AbstractTransformer;
+use Locomotive\Theme\Transformer\AbstractTransformer;
 
 /**
  * Transformer: Content Block

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Theme\Content;
+namespace Locomotive\Theme\Content;
 
 use Countable;
 use Generator;

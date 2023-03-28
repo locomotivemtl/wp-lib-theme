@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Theme\Template;
+namespace Locomotive\Theme\Template;
 
-use App\Theme\Transformer\TransformerInterface as Transformer;
+use Locomotive\Theme\Transformer\TransformerInterface as Transformer;
 use InvalidArgumentException;
 use Timber\CoreEntityInterface as CoreEntity;
 use Timber\Loader;
@@ -140,8 +140,9 @@ abstract class AbstractTemplate
         }
 
         throw new InvalidArgumentException(sprintf(
-            'Expected $transformer parameter to be a class string or instance of %s',
-            Transformer::class
+            'Expected $transformer parameter to be a class string or instance of %s, received %s',
+            Transformer::class,
+            (is_scalar($transformer) ? var_export($transformer, true) : gettype($transformer))
         ));
     }
 

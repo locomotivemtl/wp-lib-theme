@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Theme\Traits;
+namespace Locomotive\Theme\Traits;
 
-use App\Theme\Transformer\TransformerInterface as Transformer;
+use Locomotive\Theme\Transformer\Content\ContentBlock;
+use Locomotive\Theme\Transformer\TransformerInterface as Transformer;
 use Timber\CoreEntityInterface as CoreEntity;
 
 trait HasContentBlocksTrait
@@ -78,7 +79,12 @@ trait HasContentBlocksTrait
             }
         }
 
-        return $this->content_blocks_namespace . '\\' . $this->content_blocks_class;
+        $fallback_class = $this->content_blocks_namespace . '\\' . $this->content_blocks_class;
+        if (class_exists($fallback_class)) {
+            return $fallback_class;
+        }
+
+        return ContentBlock::class;
     }
 
     /**

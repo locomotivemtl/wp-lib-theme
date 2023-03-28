@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\Theme\\": "inc/"
+            "Locomotive\\Theme\\": "inc/"
         }
     },
     "config": {

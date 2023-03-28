@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Theme\Transformer;
+namespace Locomotive\Theme\Transformer;
 
 abstract class AbstractTransformer implements TransformerInterface
 {
