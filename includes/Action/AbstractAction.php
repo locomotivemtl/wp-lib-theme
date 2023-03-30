@@ -42,18 +42,17 @@ abstract class AbstractAction extends WP_AJAX
      *
      * @overrides WP_AJAX::url()
      *
-     * @param  array  $args Optional associative array of query variables.
+     * @param  array  $params Optional associative array of query variables.
      * @return string AJAX URL link with optional query parameters appended.
      */
-    public static function url( array $args = [] ) : string
+    public static function url( $params = [] )
     {
-        $args = wp_parse_args( $args, [
+        $params = wp_parse_args( $params, [
             'action' => (new static())->action,
         ]);
 
-        # $url = admin_url( '/admin-ajax.php' );
-        $url = home_url( '/wp-ajax.php' );
-        $url = add_query_arg( $args, $url );
+        $url = admin_url( '/admin-ajax.php' );
+        $url = add_query_arg( $params, $url );
 
         return $url;
     }
