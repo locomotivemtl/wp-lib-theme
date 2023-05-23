@@ -47,6 +47,14 @@ abstract class AbstractAction extends WP_AJAX
      */
     public static function url( $params = [] )
     {
+        if ( ! isset( $params['lang'] ) ) {
+            if ( function_exists( 'pll_current_language' ) && ( $current_language = pll_current_language() ) ) {
+                $params['lang'] = $current_language;
+            } elseif ( function_exists( 'wpml_get_current_language' ) && ( $current_language = wpml_get_current_language() ) ) {
+                $params['lang'] = $current_language;
+            }
+        }
+
         $params = wp_parse_args( $params, [
             'action' => (new static())->action,
         ]);
